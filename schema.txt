@@ -1,0 +1,27 @@
+users :
+=====
+id 
+pseudo VARCHAR
+(timestamp DATETIME)
+
+rooms :
+=====
+id
+nom VARCHAR
+(timestamp DATETIME)
+
+messages :
+========
+id
+user_id INT FK
+room_id INT FK
+message VARCHAR(144)
+timestamp DATETIME
+
+mps : 
+===
+id
+user1_id INT FK
+user2_id INT FK
+message VARCHAR(144)
+timestamp DATETIME
