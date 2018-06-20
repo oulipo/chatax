@@ -1,0 +1,21 @@
+
+.rouge {
+    background-color: red;
+}
+
+.bleu {
+    background-color: blue;
+}
+
+.vert {
+    background-color: green;
+}
+
+.jaune {
+    background-color: yellow;
+}
+
+.no-padding {
+    padding: 0 !important;
+    margin: 0 !important;
+}
