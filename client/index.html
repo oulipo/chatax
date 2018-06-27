@@ -15,58 +15,48 @@
         <div class="row">
             <div class="col-3" style="height: 100vh;">
                 <div style="height: 50vh;overflow-y: scroll;">
-                    <ul class=" list-group list-group-flush">
-                        <li class="list-group-item">User 1</li>
-                        <li class="list-group-item">User 2</li>
-                        <li class="list-group-item">User 3</li>
+                    <ul id="users" class="list-group list-group-flush">
+                        
                     </ul>
                 </div>
                 <div style="height: 50vh;overflow-y: scroll;">
-                    <ul class=" list-group list-group-flush">
-                        <li class="list-group-item active">Room 1</li>
-                        <li class="list-group-item">Room 2</li>
-                        <li class="list-group-item">Room 3</li>
+                    <ul id="rooms" class="list-group list-group-flush">
+                        
                     </ul>
+                    <form id="creer_room" class="form-inline">
+                        <div class="row">
+                            <div class="col">
+                                <input type="text" name="nom" class="form-control" placeholder="room">
+                                <button type="submit" class="btn btn-large mb-2">créer</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
             <div class="col-9">
                 <div class="container-fluid no-padding">
                     <div class="row">
                         <div class="col" style="height: 80vh;overflow-y: scroll;">
-                            <ul class=" list-group list-group-flush">
-                                <li class="list-group-item">Cras justo odio<br>OK</li>
-                                <li class="list-group-item">Dapibus ac facilisis in</li>
-                                <li class="list-group-item">Morbi leo risus</li>
-                                <li class="list-group-item">Porta ac consectetur ac</li>
-                                <li class="list-group-item">Vestibulum at eros</li>
-                                <li class="list-group-item">Cras justo odio
-                                    <br>OK</li>
-                                <li class="list-group-item">Dapibus ac facilisis in</li>
-                                <li class="list-group-item">Morbi leo risus</li>
-                                <li class="list-group-item">Porta ac consectetur ac</li>
-                                <li class="list-group-item">Vestibulum at eros</li>
-                                <li class="list-group-item">Cras justo odio
-                                    <br>OK</li>
-                                <li class="list-group-item">Dapibus ac facilisis in</li>
-                                <li class="list-group-item">Morbi leo risus</li>
-                                <li class="list-group-item">Porta ac consectetur ac</li>
-                                <li class="list-group-item">Vestibulum at eros</li>
+                            <ul id="messages" class="list-group list-group-flush">
+                                
                             </ul>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-3" style="height: 20vh;">
-                            <form>
-                            <div class="row">
-                                <div class="col">
-                                    <input type="text" class="form-control" placeholder="anonymous">
+                            <form id="creer_user" class="form-inline">
+                                <div class="row">
+                                    <div class="col">
+                                        <input type="text" name="pseudo" class="form-control" placeholder="anonymous">
+                                        <button type="submit" class="btn btn-large mb-2">ok</button>
+                                    </div>
                                 </div>
-                            </div>
-                        </form></div>
+                            </form>
+                        </div>
                         <div class="col-9">
-                            <form class="form-inline">
+                            <form id="creer_message" class="form-inline">
                                 <div class="form-group">
-                                    <textarea class="form-control" id="message"></textarea>
+                                    <textarea class="form-control" id="message" name="message"></textarea>
                                     <button type="submit" class="btn btn-large mb-2">envoyer</button>
                                 </div>
                             </form>
@@ -77,11 +67,156 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
         crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
         crossorigin="anonymous"></script>
+    <script>
+    $(function() {
+
+        let myid = 1; // l'id de l'utilisateur
+        let room_id = 0 // la room sélectionnée
+        let user_id = 0 // le destinataire
+        
+        
+        // au démarrage, on ne sélectionne aucune room ni user : donc pas de messages à afficher.
+        // on affiche les users et les rooms
+        // l'utilisateur choisi un user ou une room (on peut désormais savoir quelle est l'entité sélectionnée)
+        // cela déclenche une opération ajax qui va récupérer les messages adéquats
+        // sélectionner une room ou un user implique une action ajax différente pour récupérer les messages
+
+        function getUsers() {
+            $.getJSON("http://localhost:8888/chat/serveur/api/users.php", function(data) {
+                $("#users").empty();
+                data.forEach(function (user) {
+                    $("#users").append('<li class="list-group-item" data-user_id="' + user.id + '">' + user.pseudo + '</li>');
+                })
+            })
+        }
+
+        function getRooms() {
+            $.getJSON("http://localhost:8888/chat/serveur/api/rooms.php", function (data) {
+                $("#rooms").empty();
+                data.forEach(function(room) {
+                    $("#rooms").append('<li class="list-group-item" data-room_id="'+room.id+'">'+room.nom+'</li>');
+                })
+            })
+        }
+
+        function creerUser(data) {
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:8888/chat/serveur/api/creerUser.php",
+                data: data,
+                dataType: "json",
+                success: function (result) {
+                    console.log(result);
+                    user_id = result.id;
+                    getUsers();
+                }
+            })
+        }
+
+        function creerRoom(data) {
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:8888/chat/serveur/api/creerRoom.php",
+                data: data,
+                dataType: "json",
+                success: function(result) {
+                    getRooms();
+                }
+            })
+        }
+
+        function creerMessage(data) {
+            console.log(data);
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:8888/chat/serveur/api/creerMessage.php",
+                data: data,
+                dataType: "json",
+                success: function (result) {
+                    getMsgsFromRoom(room_id);
+                }
+            })
+        }
+
+        function getMsgsFromRoom(id) {
+            $.ajax({
+            type: "POST",
+            url: "http://localhost:8888/chat/serveur/api/messages.php",
+            data: { room_id: id },
+            dataType: "json",
+            success: function(result) {
+                //console.log(result);
+                if (result.status === "OK") {
+                    $("#messages").empty();
+                    result.messages.forEach(function(msg) {
+                        $("#messages").append('<li class="list - group - item">'+msg.pseudo + " : " + msg.message+'</li>');
+                    })
+                }
+            }
+            })
+        }
+
+        function getMsgsFromUser(id, user_id) {
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:8888/chat/serveur/api/mps.php",
+                data: { emetteur: id, recepteur: user_id },
+                dataType: "json",
+                success: function (result) {
+                    //console.log(result);
+                    if (result.status === "OK") {
+                        result.messages.forEach(function (msg) {
+                            $("#messages").append('<li class="list - group - item">' + msg.pseudo + " : " + msg.message + '</li>');
+                        })
+                    }
+                }
+            })
+        }
+        getUsers();
+        getRooms();
+
+        $("#users").on("click", "li", function(e) {
+            e.preventDefault();
+            $("#users li").removeClass("active");
+            $("#rooms li").removeClass("active");
+            user_id = $(this).data("user_id");
+            $(this).addClass("active");
+            getMsgsFromUser(myid, user_id);
+        })
+
+        $("#rooms").on("click", "li", function (e) {
+            e.preventDefault();
+            $("#users li").removeClass("active");
+            $("#rooms li").removeClass("active");
+            room_id = $(this).data("room_id");
+            $(this).addClass("active");
+            getMsgsFromRoom(room_id);
+        })
+
+        $("form#creer_room").on("submit", function(e) {
+            e.preventDefault();
+            data = $(this).serialize();
+            creerRoom(data);
+        })
+
+        $("form#creer_message").on("submit", function (e) {
+            e.preventDefault();
+            data = $(this).serialize();
+            data += "&user_id="+user_id+"&room_id="+room_id;
+            creerMessage(data);
+        })
+
+        $("form#creer_user").on("submit", function (e) {
+            e.preventDefault();
+            data = $(this).serialize();
+            creerUser(data);
+        })
+    })
+    </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 - serveur : PHP, BDD, JSON
 
 ## Fonctionnalités : 
-* MP, Room, pseudo, refresh de la liste des messages, saisir un message (texte), sortir d'une room, entrer dans une room
+* MP, Room, pseudo, refresh de la liste des messages, saisir un message (texte), sortir d'une room, entrer dans une room, créer une room
 
 ## Etapes
 * BDD : 
@@ -12,5 +12,7 @@
 * Le front
 
 * Le serveur / back
+
+* relier front/back via ajax
 
 * utiliser git et github
